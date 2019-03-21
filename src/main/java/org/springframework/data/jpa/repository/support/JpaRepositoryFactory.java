@@ -68,6 +68,7 @@ public class JpaRepositoryFactory extends RepositoryFactorySupport {
 	private final CrudMethodMetadataPostProcessor crudMethodMetadataPostProcessor;
 
 	private EntityPathResolver entityPathResolver;
+	private char escapeCharacter = '\\';
 
 	/**
 	 * Creates a new {@link JpaRepositoryFactory}.
@@ -111,6 +112,15 @@ public class JpaRepositoryFactory extends RepositoryFactorySupport {
 		Assert.notNull(entityPathResolver, "EntityPathResolver must not be null!");
 
 		this.entityPathResolver = entityPathResolver;
+	}
+
+	/**
+	 * Configures the escape character to be used for like-expressions created for derived queries.
+	 *
+	 * @param escapeCharacter a character used for escaping in certain like expressions.
+	 */
+	public void setEscapeCharacter(char escapeCharacter) {
+		this.escapeCharacter = escapeCharacter;
 	}
 
 	/*
@@ -174,7 +184,8 @@ public class JpaRepositoryFactory extends RepositoryFactorySupport {
 	@Override
 	protected Optional<QueryLookupStrategy> getQueryLookupStrategy(@Nullable Key key,
 			QueryMethodEvaluationContextProvider evaluationContextProvider) {
-		return Optional.of(JpaQueryLookupStrategy.create(entityManager, key, extractor, evaluationContextProvider));
+		return Optional
+				.of(JpaQueryLookupStrategy.create(entityManager, key, extractor, evaluationContextProvider, escapeCharacter));
 	}
 
 	/*

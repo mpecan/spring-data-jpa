@@ -15,6 +15,7 @@
  */
 package org.springframework.data.jpa.repository.query;
 
+import java.lang.reflect.Method;
 import java.util.List;
 import java.util.function.Function;
 
@@ -34,6 +35,7 @@ import org.springframework.expression.Expression;
 import org.springframework.expression.spel.standard.SpelExpressionParser;
 import org.springframework.lang.Nullable;
 import org.springframework.util.Assert;
+import org.springframework.util.ReflectionUtils;
 
 /**
  * Encapsulates different strategies for the creation of a {@link QueryParameterSetter} from a {@link Query} and a
@@ -175,6 +177,11 @@ abstract class QueryParameterSetterFactory {
 		private Object evaluateExpression(Expression expression, Object[] values) {
 
 			EvaluationContext context = evaluationContextProvider.getEvaluationContext(parameters, values);
+			Method escapeMethod = ReflectionUtils.findMethod(QueryUtils.class, "escape", String.class, String.class);
+
+			Assert.notNull(escapeMethod, "Escape method must not be null.");
+
+			context.setVariable("escape", escapeMethod);
 			return expression.getValue(context, Object.class);
 		}
 	}

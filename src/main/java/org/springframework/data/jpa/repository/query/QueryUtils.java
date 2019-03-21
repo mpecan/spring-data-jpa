@@ -731,4 +731,21 @@ public abstract class QueryUtils {
 			throw new InvalidDataAccessApiUsageException(String.format(UNSAFE_PROPERTY_REFERENCE, order));
 		}
 	}
+
+	static String escape(String value, char escape) {
+
+		Assert.notNull(value, "Value must be not null.");
+
+		return value.replace("_", escape + "_").replace("%", escape + "%");
+	}
+
+	// used for SpEL expressions
+	static String escape(String value, String escape) {
+
+		Assert.hasText(escape, "escape must be a sinlge character String.");
+		char[] chars = escape.toCharArray();
+		Assert.isTrue(chars.length == 1, "escape must be a sinlge character String.");
+
+		return escape(value, chars[0]);
+	}
 }
