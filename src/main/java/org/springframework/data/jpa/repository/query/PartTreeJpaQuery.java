@@ -29,6 +29,7 @@ import org.springframework.data.jpa.provider.PersistenceProvider;
 import org.springframework.data.jpa.repository.query.JpaQueryExecution.DeleteExecution;
 import org.springframework.data.jpa.repository.query.JpaQueryExecution.ExistsExecution;
 import org.springframework.data.jpa.repository.query.ParameterMetadataProvider.ParameterMetadata;
+import org.springframework.data.jpa.repository.support.EscapeCharacter;
 import org.springframework.data.repository.query.ParametersParameterAccessor;
 import org.springframework.data.repository.query.ResultProcessor;
 import org.springframework.data.repository.query.ReturnedType;
@@ -53,16 +54,16 @@ public class PartTreeJpaQuery extends AbstractJpaQuery {
 	private final QueryPreparer query;
 	private final QueryPreparer countQuery;
 	private final EntityManager em;
-	private final char escape;
+	private final EscapeCharacter escape;
 
 	/**
 	 * Creates a new {@link PartTreeJpaQuery}.
-	 *  @param method must not be {@literal null}.
+	 * @param method must not be {@literal null}.
 	 * @param em must not be {@literal null}.
 	 * @param persistenceProvider must not be {@literal null}.
 	 * @param escape
 	 */
-	PartTreeJpaQuery(JpaQueryMethod method, EntityManager em, PersistenceProvider persistenceProvider, char escape) {
+	PartTreeJpaQuery(JpaQueryMethod method, EntityManager em, PersistenceProvider persistenceProvider, EscapeCharacter escape) {
 
 		super(method, em);
 
