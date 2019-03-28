@@ -498,7 +498,7 @@ In combination with the `escape` clause of the `like` expression available in JP
 ====
 [source, java]
 ----
-@Query("select u from User u where u.firstname like %?#{#escape([0])}% escape '#'")
+@Query("select u from User u where u.firstname like %?#{escape([0])}% escape ?#{escapeCharacter()}")
 List<User> findContainingEscaped(String namePart);
 ----
 ====
