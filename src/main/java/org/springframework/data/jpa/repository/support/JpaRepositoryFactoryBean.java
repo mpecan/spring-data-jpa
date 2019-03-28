@@ -44,7 +44,7 @@ public class JpaRepositoryFactoryBean<T extends Repository<S, ID>, S, ID>
 
 	private @Nullable EntityManager entityManager;
 	private EntityPathResolver entityPathResolver;
-	private char escapeCharacter;
+	private EscapeCharacter escapeCharacter = EscapeCharacter.of('\\');
 
 	/**
 	 * Creates a new {@link JpaRepositoryFactoryBean} for the given repository interface.
@@ -122,6 +122,6 @@ public class JpaRepositoryFactoryBean<T extends Repository<S, ID>, S, ID>
 
 	public void setEscapeCharacter(char escapeCharacter) {
 
-		this.escapeCharacter = escapeCharacter;
+		this.escapeCharacter = EscapeCharacter.of(escapeCharacter);
 	}
 }

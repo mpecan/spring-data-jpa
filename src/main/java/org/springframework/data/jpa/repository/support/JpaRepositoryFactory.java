@@ -68,7 +68,7 @@ public class JpaRepositoryFactory extends RepositoryFactorySupport {
 	private final CrudMethodMetadataPostProcessor crudMethodMetadataPostProcessor;
 
 	private EntityPathResolver entityPathResolver;
-	private char escapeCharacter = '\\';
+	private EscapeCharacter escapeCharacter = EscapeCharacter.of('\\');
 
 	/**
 	 * Creates a new {@link JpaRepositoryFactory}.
@@ -119,7 +119,7 @@ public class JpaRepositoryFactory extends RepositoryFactorySupport {
 	 *
 	 * @param escapeCharacter a character used for escaping in certain like expressions.
 	 */
-	public void setEscapeCharacter(char escapeCharacter) {
+	public void setEscapeCharacter(EscapeCharacter escapeCharacter) {
 		this.escapeCharacter = escapeCharacter;
 	}
 

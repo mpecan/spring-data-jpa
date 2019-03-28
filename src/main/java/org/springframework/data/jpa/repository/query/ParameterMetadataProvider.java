@@ -27,6 +27,7 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.ParameterExpression;
 
 import org.springframework.data.jpa.provider.PersistenceProvider;
+import org.springframework.data.jpa.repository.support.EscapeCharacter;
 import org.springframework.data.repository.query.Parameter;
 import org.springframework.data.repository.query.Parameters;
 import org.springframework.data.repository.query.ParametersParameterAccessor;
@@ -54,33 +55,31 @@ class ParameterMetadataProvider {
 	private final List<ParameterMetadata<?>> expressions;
 	private final @Nullable Iterator<Object> bindableParameterValues;
 	private final PersistenceProvider persistenceProvider;
-	private final char escape;
+	private final EscapeCharacter escape;
 
 	/**
 	 * Creates a new {@link ParameterMetadataProvider} from the given {@link CriteriaBuilder} and
 	 * {@link ParametersParameterAccessor} with support for parameter value customizations via {@link PersistenceProvider}
 	 * .
-	 *
-	 * @param builder must not be {@literal null}.
+	 *  @param builder must not be {@literal null}.
 	 * @param accessor must not be {@literal null}.
 	 * @param provider must not be {@literal null}.
 	 * @param escape
 	 */
 	public ParameterMetadataProvider(CriteriaBuilder builder, ParametersParameterAccessor accessor,
-									 PersistenceProvider provider, char escape) {
+									 PersistenceProvider provider, EscapeCharacter escape) {
 		this(builder, accessor.iterator(), accessor.getParameters(), provider, escape);
 	}
 
 	/**
 	 * Creates a new {@link ParameterMetadataProvider} from the given {@link CriteriaBuilder} and {@link Parameters} with
 	 * support for parameter value customizations via {@link PersistenceProvider}.
-	 *
-	 * @param builder must not be {@literal null}.
+	 *  @param builder must not be {@literal null}.
 	 * @param parameters must not be {@literal null}.
 	 * @param provider must not be {@literal null}.
 	 * @param escape
 	 */
-	public ParameterMetadataProvider(CriteriaBuilder builder, Parameters<?, ?> parameters, PersistenceProvider provider, char escape) {
+	public ParameterMetadataProvider(CriteriaBuilder builder, Parameters<?, ?> parameters, PersistenceProvider provider, EscapeCharacter escape) {
 		this(builder, null, parameters, provider, escape);
 	}
 
@@ -96,7 +95,7 @@ class ParameterMetadataProvider {
 	 * @param escape
 	 */
 	private ParameterMetadataProvider(CriteriaBuilder builder, @Nullable Iterator<Object> bindableParameterValues,
-									  Parameters<?, ?> parameters, PersistenceProvider provider, char escape) {
+									  Parameters<?, ?> parameters, PersistenceProvider provider, EscapeCharacter escape) {
 
 		Assert.notNull(builder, "CriteriaBuilder must not be null!");
 		Assert.notNull(parameters, "Parameters must not be null!");
@@ -181,7 +180,7 @@ class ParameterMetadataProvider {
 		return metadata;
 	}
 
-	char getEscape() {
+	EscapeCharacter getEscape() {
 		return escape;
 	}
 
@@ -197,13 +196,13 @@ class ParameterMetadataProvider {
 		private final Type type;
 		private final ParameterExpression<T> expression;
 		private final PersistenceProvider persistenceProvider;
-		private final char escape;
+		private final EscapeCharacter escape;
 
 		/**
 		 * Creates a new {@link ParameterMetadata}.
 		 */
 		public ParameterMetadata(ParameterExpression<T> expression, Type type, @Nullable Object value,
-								 PersistenceProvider provider, char escape) {
+								 PersistenceProvider provider, EscapeCharacter escape) {
 
 			this.expression = expression;
 			this.persistenceProvider = provider;
@@ -243,12 +242,12 @@ class ParameterMetadataProvider {
 
 				switch (type) {
 					case STARTING_WITH:
-						return String.format("%s%%", QueryUtils.escape(value.toString(), escape));
+						return String.format("%s%%", escape.escape(value.toString()));
 					case ENDING_WITH:
-						return String.format("%%%s", QueryUtils.escape(value.toString(), escape));
+						return String.format("%%%s", escape.escape(value.toString()));
 					case CONTAINING:
 					case NOT_CONTAINING:
-						return String.format("%%%s%%", QueryUtils.escape(value.toString(), escape));
+						return String.format("%%%s%%", escape.escape(value.toString()));
 					default:
 						return value;
 				}

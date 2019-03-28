@@ -26,6 +26,7 @@ import org.springframework.data.jpa.repository.query.JpaParameters.JpaParameter;
 import org.springframework.data.jpa.repository.query.ParameterMetadataProvider.ParameterMetadata;
 import org.springframework.data.jpa.repository.query.QueryParameterSetter.NamedOrIndexedQueryParameterSetter;
 import org.springframework.data.jpa.repository.query.StringQuery.ParameterBinding;
+import org.springframework.data.jpa.repository.support.EscapeCharacter;
 import org.springframework.data.repository.query.Parameter;
 import org.springframework.data.repository.query.Parameters;
 import org.springframework.data.repository.query.QueryMethodEvaluationContextProvider;
@@ -177,7 +178,7 @@ abstract class QueryParameterSetterFactory {
 		private Object evaluateExpression(Expression expression, Object[] values) {
 
 			EvaluationContext context = evaluationContextProvider.getEvaluationContext(parameters, values);
-			Method escapeMethod = ReflectionUtils.findMethod(QueryUtils.class, "escape", String.class, String.class);
+			Method escapeMethod = ReflectionUtils.findMethod(EscapeCharacter.class, "escape", String.class, String.class);
 
 			Assert.notNull(escapeMethod, "Escape method must not be null.");
 

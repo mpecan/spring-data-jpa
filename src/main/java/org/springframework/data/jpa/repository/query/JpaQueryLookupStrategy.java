@@ -22,6 +22,7 @@ import javax.persistence.EntityManager;
 import org.springframework.data.jpa.provider.PersistenceProvider;
 import org.springframework.data.jpa.provider.QueryExtractor;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.jpa.repository.support.EscapeCharacter;
 import org.springframework.data.projection.ProjectionFactory;
 import org.springframework.data.repository.core.NamedQueries;
 import org.springframework.data.repository.core.RepositoryMetadata;
@@ -40,8 +41,6 @@ import org.springframework.util.Assert;
  * @author Mark Paluch
  */
 public final class JpaQueryLookupStrategy {
-
-
 
 	/**
 	 * Private constructor to prevent instantiation.
@@ -93,9 +92,9 @@ public final class JpaQueryLookupStrategy {
 	private static class CreateQueryLookupStrategy extends AbstractQueryLookupStrategy {
 
 		private final PersistenceProvider persistenceProvider;
-		private final char escape;
+		private final EscapeCharacter escape;
 
-		public CreateQueryLookupStrategy(EntityManager em, QueryExtractor extractor, char escape) {
+		public CreateQueryLookupStrategy(EntityManager em, QueryExtractor extractor, EscapeCharacter escape) {
 
 			super(em, extractor);
 
@@ -226,7 +225,7 @@ public final class JpaQueryLookupStrategy {
 	 * @return
 	 */
 	public static QueryLookupStrategy create(EntityManager em, @Nullable Key key, QueryExtractor extractor,
-											 QueryMethodEvaluationContextProvider evaluationContextProvider, char escape) {
+			QueryMethodEvaluationContextProvider evaluationContextProvider, EscapeCharacter escape) {
 
 		Assert.notNull(em, "EntityManager must not be null!");
 		Assert.notNull(extractor, "QueryExtractor must not be null!");
@@ -238,7 +237,8 @@ public final class JpaQueryLookupStrategy {
 			case USE_DECLARED_QUERY:
 				return new DeclaredQueryLookupStrategy(em, extractor, evaluationContextProvider);
 			case CREATE_IF_NOT_FOUND:
-				return new CreateIfNotFoundQueryLookupStrategy(em, extractor, new CreateQueryLookupStrategy(em, extractor, escape),
+				return new CreateIfNotFoundQueryLookupStrategy(em, extractor,
+						new CreateQueryLookupStrategy(em, extractor, escape),
 						new DeclaredQueryLookupStrategy(em, extractor, evaluationContextProvider));
 			default:
 				throw new IllegalArgumentException(String.format("Unsupported query lookup strategy %s!", key));
