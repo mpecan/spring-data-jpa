@@ -503,6 +503,8 @@ List<User> findContainingEscaped(String namePart);
 ====
 
 Given this method declaration in an repository interface `findContainingEscaped("Peter_")" will find `Peter_Parker` but not `Peter Parker`.
+Note that the method `escape(String, String)` available in the SpEL context will only escape the SQL and JPQL standard wildcards `_` and `%`.
+If the underlying database or the JPA implementation supports additional wildcards these will not get escaped.
 
 [[jpa.modifying-queries]]
 === Modifying Queries
