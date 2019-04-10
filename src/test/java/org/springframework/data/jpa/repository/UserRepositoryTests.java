@@ -52,8 +52,6 @@ import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.data.domain.Example;
 import org.springframework.data.domain.ExampleMatcher;
-import org.springframework.data.domain.ExampleMatcher.GenericPropertyMatcher;
-import org.springframework.data.domain.ExampleMatcher.StringMatcher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -62,11 +60,13 @@ import org.springframework.data.domain.Slice;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.data.domain.Sort.Order;
+import org.springframework.data.domain.ExampleMatcher.*;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.domain.sample.Address;
 import org.springframework.data.jpa.domain.sample.Role;
 import org.springframework.data.jpa.domain.sample.SpecialUser;
 import org.springframework.data.jpa.domain.sample.User;
+import org.springframework.data.jpa.domain.sample.UserSpecifications;
 import org.springframework.data.jpa.repository.sample.SampleEvaluationContextExtension.SampleSecurityContextHolder;
 import org.springframework.data.jpa.repository.sample.UserRepository;
 import org.springframework.data.jpa.repository.sample.UserRepository.NameOnly;
@@ -2204,11 +2204,50 @@ public class UserRepositoryTests {
 	}
 
 	@Test // DATAJPA-1307
-	public void testFindByEmailAddressJdbcStyleParameter() throws Exception {
+	public void testFindByEmailAddressJdbcStyleParameter() {
 
 		flushTestUsers();
 
 		assertThat(repository.findByEmailNativeAddressJdbcStyleParameter("gierke@synyx.de")).isEqualTo(firstUser);
+	}
+
+	@Test // DATAJPA-1169
+	public void testReuseOfJoinsForSpecifications_joinStyle() {
+
+		// Fails because the join in the specification messes up the cardinality.
+		
+		Role simple1 = new Role("simple1");
+		Role simple2 = new Role("simple2");
+		Role advanced = new Role("advanced");
+
+		User one = new User("one", "one", "one@one", simple1, simple2, advanced);
+
+		em.persist(simple1);
+		em.persist(simple2);
+		em.persist(advanced);
+		em.persist(one);
+
+		assertThat(repository.findAll(UserSpecifications.roleNameStartsWith_joinStyle("simple"))).isEqualTo(one);
+	}
+
+	@Test // DATAJPA-1169
+	public void testReuseOfJoinsForSpecifications_leftJoinStyle() {
+
+		// Fails because the join in the specification messes up the cardinality.
+
+		Role simple1 = new Role("simple1");
+		Role simple2 = new Role("simple2");
+		Role advanced = new Role("advanced");
+
+		User one = new User("one", "one", "one@one", simple1, simple2, advanced);
+
+		em.persist(simple1);
+		em.persist(simple2);
+		em.persist(advanced);
+		em.persist(one);
+
+		List<User> result = repository.findAll(roleNameStartsWith_leftJoinStyle("simple"));
+		assertThat(result).isEqualTo(one);
 	}
 
 	private Page<User> executeSpecWithSort(Sort sort) {

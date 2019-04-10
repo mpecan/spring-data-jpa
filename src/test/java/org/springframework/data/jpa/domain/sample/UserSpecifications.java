@@ -17,6 +17,7 @@ package org.springframework.data.jpa.domain.sample;
 
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
@@ -98,6 +99,23 @@ public class UserSpecifications {
 			public Predicate toPredicate(Root<T> root, CriteriaQuery<?> query, CriteriaBuilder builder) {
 
 				return builder.equal(root.get(property), value);
+			}
+		};
+	}
+
+	public static Specification<User> roleNameStartsWith_joinStyle(String nameStart) {
+		return new Specification<User>() {
+			@Override
+			public Predicate toPredicate(Root<User> root, CriteriaQuery<?> query, CriteriaBuilder builder) {
+				return builder.like(root.join("roles").get("name").as(String.class), nameStart + "%");
+			}
+		};
+	}
+	public static Specification<User> roleNameStartsWith_leftJoinStyle(String nameStart) {
+		return new Specification<User>() {
+			@Override
+			public Predicate toPredicate(Root<User> root, CriteriaQuery<?> query, CriteriaBuilder builder) {
+				return builder.like(root.join("roles", JoinType.LEFT).get("name").as(String.class), nameStart + "%");
 			}
 		};
 	}
