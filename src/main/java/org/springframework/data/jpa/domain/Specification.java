@@ -24,6 +24,7 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
+import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 
 /**
@@ -62,7 +63,7 @@ public interface Specification<T> extends Serializable {
 	 * @return
 	 * @since 2.0
 	 */
-	@Nullable
+	@NonNull
 	static <T> Specification<T> where(@Nullable Specification<T> spec) {
 		return spec == null ? (root, query, builder) -> null : spec;
 	}
@@ -74,7 +75,7 @@ public interface Specification<T> extends Serializable {
 	 * @return The conjunction of the specifications
 	 * @since 2.0
 	 */
-	@Nullable
+	@NonNull
 	default Specification<T> and(@Nullable Specification<T> other) {
 		return composed(this, other, (builder, left, rhs) -> builder.and(left, rhs));
 	}
@@ -86,7 +87,7 @@ public interface Specification<T> extends Serializable {
 	 * @return The disjunction of the specifications
 	 * @since 2.0
 	 */
-	@Nullable
+	@NonNull
 	default Specification<T> or(@Nullable Specification<T> other) {
 		return composed(this, other, (builder, left, rhs) -> builder.or(left, rhs));
 	}

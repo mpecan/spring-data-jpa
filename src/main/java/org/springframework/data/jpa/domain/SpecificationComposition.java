@@ -22,6 +22,7 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
+import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 
 /**
@@ -38,7 +39,7 @@ class SpecificationComposition {
 		Predicate combine(CriteriaBuilder builder, @Nullable Predicate lhs, @Nullable Predicate rhs);
 	}
 
-	@Nullable
+	@NonNull
 	static <T> Specification<T> composed(@Nullable Specification<T> lhs, @Nullable Specification<T> rhs,
 			Combiner combiner) {
 
@@ -55,7 +56,8 @@ class SpecificationComposition {
 		};
 	}
 
-	private static <T> Predicate toPredicate(Specification<T> specification, Root<T> root, CriteriaQuery<?> query,
+	@Nullable
+	private static <T> Predicate toPredicate(@Nullable Specification<T> specification, Root<T> root, CriteriaQuery<?> query,
 			CriteriaBuilder builder) {
 		return specification == null ? null : specification.toPredicate(root, query, builder);
 	}
